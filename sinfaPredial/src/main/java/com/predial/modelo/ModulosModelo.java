@@ -1,0 +1,55 @@
+package com.predial.modelo;
+import com.predial.anotacion.NotNull;
+import com.predial.anotacion.OrderDefault;
+import com.predial.anotacion.Size;
+import jakarta.ws.rs.FormParam;
+@OrderDefault("Codigo")
+public class ModulosModelo {
+    @NotNull(update = false)
+    @Size(since = 0 , until = 2)
+    @FormParam("Codigo")
+    private String Codigo;
+    @NotNull
+    @Size(since = 0 , until = 50)
+    @FormParam("Descripcion")
+    private String Descripcion;
+
+    private Integer Id_Modulos;
+
+	public ModulosModelo() {
+		super();
+	}
+
+	public ModulosModelo(String codigo, String descripcion, Integer id_Modulos) {
+		super();
+		Codigo = codigo;
+		Descripcion = descripcion;
+		Id_Modulos = id_Modulos;
+	}
+
+	public String getCodigo() {
+		return Codigo;
+	}
+
+	public void setCodigo(String codigo) {
+		Codigo = codigo;
+	}
+
+	public String getDescripcion() {
+		return Descripcion;
+	}
+
+	public void setDescripcion(String descripcion) {
+		Descripcion = descripcion;
+	}
+
+	public Integer getId_Modulos() {
+		return Id_Modulos;
+	}
+
+	public void setId_Modulos(Integer id_Modulos) {
+		Id_Modulos = id_Modulos;
+	}
+    
+    
+}
