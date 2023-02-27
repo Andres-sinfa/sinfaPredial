@@ -28,11 +28,12 @@ import java.lang.reflect.InvocationTargetException;
 
 public interface CrudRepositorio {
 	conexion conectar = new conexion();
-	Connection con = conectar.Conexion();
+	
 	RetornoBusqueda busquedaModelo = new RetornoBusqueda();
 	RetornoMostrable RetornoModelo = new RetornoMostrable();
 
 	public default int count( String query) throws SQLException{
+		Connection con = conectar.Conexion();
 		int count = 0;
 		PreparedStatement ps = con.prepareStatement(query.replace("*", "count(*)"));
 		ResultSet rs = ps.executeQuery();
@@ -92,6 +93,8 @@ public interface CrudRepositorio {
 		 }
 	
 	public default <T> RetornoMostrable find(String tabla,T t,UriInfo info) throws SQLException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException{
+
+		Connection con = conectar.Conexion();
 		Field fields[] = t.getClass().getDeclaredFields();
 		ArrayList<Object> data = new ArrayList<Object>();
 		
@@ -206,7 +209,7 @@ public interface CrudRepositorio {
 			data.add(objeto);
 			
 		}
-
+		con.close();
 		busquedaModelo.setFilas(data);
 		busquedaModelo.setFilasPorPagina(data.size());
 		busquedaModelo.setTotalPaginas((int) Math.ceil((float) ((float) total / (float)registros)));
@@ -220,6 +223,8 @@ public interface CrudRepositorio {
 	}
 	
 	public default <T> RetornoMostrable insert(String tabla,T t) throws SQLException {
+		
+		Connection con = conectar.Conexion();
 		int idGenerado= 0;
 		Field fields[] = t.getClass().getDeclaredFields();
 		String insert = "insert into "+tabla+"(";
@@ -266,6 +271,7 @@ public interface CrudRepositorio {
 						}
 					}
 					ps.execute();
+					con.close();
 					ResultSet generatedKeys = ps.getGeneratedKeys();
 					
 					if (generatedKeys.next()) {
@@ -277,6 +283,7 @@ public interface CrudRepositorio {
 					RetornoModelo.setStatus(200);
 					return RetornoModelo;
 				}catch(Exception e) {
+					con.close();
 					System.out.println(e +" data insert unsuccess.");
 					RetornoModelo.setData(t);
 					RetornoModelo.setData(t);
@@ -295,6 +302,7 @@ public interface CrudRepositorio {
 	}
 	
 	public default <T> RetornoMostrable update(String tabla,T t,UriInfo info) throws SQLException {
+		Connection con = conectar.Conexion();
 		String Select = "Select * from "+tabla+" where ";
 		
 		Field fields[] = t.getClass().getDeclaredFields();
@@ -360,13 +368,13 @@ public interface CrudRepositorio {
 					i++;
 				}
 			}
-			ps.executeUpdate();
+			ps.executeUpdate();			con.close();
 			RetornoModelo.setData(t);
 			RetornoModelo.setMensaje("actualizado correctamente");
 			RetornoModelo.setId(null);
 			RetornoModelo.setStatus(200);
 			return RetornoModelo;
-		}catch(Exception e) {
+		}catch(Exception e) {			con.close();
 			System.out.println(e +" data insert unsuccess.");
 			RetornoModelo.setData(t);
 			if(e.getMessage().contains("Cannot insert duplicate key in object")) {
@@ -394,6 +402,7 @@ public interface CrudRepositorio {
 
 	
 	public default <T> RetornoMostrable delete(T t,String tabla,UriInfo info) throws SQLException {
+		Connection con = conectar.Conexion();
 		String Select = "select * from "+tabla+" where ";
 		String delete = "delete from "+tabla+" where ";
 		  for (Entry<String, List<String>> param : info.getQueryParameters().entrySet()) {
@@ -413,6 +422,7 @@ public interface CrudRepositorio {
 		  }
 			
 		try {
+			con.close();
 			PreparedStatement ps = con.prepareStatement(delete);
 			ps.executeUpdate();
 			RetornoModelo.setData(null);
@@ -421,6 +431,7 @@ public interface CrudRepositorio {
 			RetornoModelo.setStatus(200);
 			return RetornoModelo;
 		}catch(Exception e) {
+			con.close();
 			System.out.println(e +"data insert unsuccess.");
 			RetornoModelo.setData(null);
 			RetornoModelo.setMensaje("No se logro eliminar");
