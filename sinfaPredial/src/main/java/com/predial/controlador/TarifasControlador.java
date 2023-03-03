@@ -5,7 +5,7 @@ import java.sql.SQLException;
 
 import com.predial.modelo.TarifasModelo;
 import com.predial.servicio.ServicioGeneral;
-import com.predial.servicio.tokenModificacionServicio;
+import com.predial.servicio.ServicioTokenModificacion;
 
 import jakarta.ws.rs.BeanParam;
 import jakarta.ws.rs.DELETE;
@@ -22,7 +22,7 @@ import jakarta.ws.rs.core.UriInfo;
 @Path("Tarifas")
 public class TarifasControlador {
 	ServicioGeneral servicio = new ServicioGeneral();
-	tokenModificacionServicio serviciomail = new tokenModificacionServicio();
+	ServicioTokenModificacion serviciomail = new ServicioTokenModificacion();
 	TarifasModelo modelo = new TarifasModelo();
 
     @GET

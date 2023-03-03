@@ -12,21 +12,6 @@ import jakarta.ws.rs.core.UriInfo;import jakarta.ws.rs.core.Response.Status;
 
 public class ServicioGeneral implements CrudRepositorio,ValidarRepositorio {
 	
-	public Response responder(RetornoMostrable modelo){
-		Response responder = null;
-		switch(modelo.getStatus()) {
-		  case 200:
-			  responder = Response.ok(modelo).build();
-		    break;
-		  case 406:
-			  responder = Response.status(Status.NOT_ACCEPTABLE).entity(modelo).build();
-		    break;
-		  case 500:
-			  responder = Response.serverError().entity(modelo).build();
-		    break;
-		}
-		return responder;
-	}
 	
 	public Response encontrar(String tabla,Object modelo , UriInfo uriinfo ) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, SQLException {
 		return this.responder(this.find(tabla, modelo, uriinfo));

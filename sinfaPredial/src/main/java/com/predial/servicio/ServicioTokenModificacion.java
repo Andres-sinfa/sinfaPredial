@@ -17,7 +17,7 @@ import com.predial.repositorio.GeneradoresRepositorio;
 
 
 
-public class tokenModificacionServicio implements GeneradoresRepositorio{
+public class ServicioTokenModificacion implements GeneradoresRepositorio{
 	
 	public void crearToken() throws NoSuchProviderException, NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException, NoSuchPaddingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException{
 		String token = this.generarToken();

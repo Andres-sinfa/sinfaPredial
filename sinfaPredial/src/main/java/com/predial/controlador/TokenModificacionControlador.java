@@ -10,7 +10,7 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
-import com.predial.servicio.tokenModificacionServicio;
+import com.predial.servicio.ServicioTokenModificacion;
 
 import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.POST;
@@ -22,7 +22,7 @@ import jakarta.ws.rs.core.Response;
 
 @Path("generarToken")
 public class TokenModificacionControlador {
-	tokenModificacionServicio tokenservicio = new tokenModificacionServicio();
+	ServicioTokenModificacion tokenservicio = new ServicioTokenModificacion();
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     public Response insertar(@FormParam("to") String to) throws NoSuchProviderException, NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException, NoSuchPaddingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException{

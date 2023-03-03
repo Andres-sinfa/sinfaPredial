@@ -110,7 +110,7 @@ public interface GeneradoresRepositorio {
 	}
 	
 	public default String convertirSHA256(String text ,String salt) throws NoSuchProviderException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
-		System.out.println(text + "hola");
+		System.out.println(text);
 		String password = "fulano";
 		SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
 		KeySpec spec = new PBEKeySpec(password.toCharArray(), salt.getBytes(), 65536, 256);

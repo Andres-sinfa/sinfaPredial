@@ -4,10 +4,10 @@ import java.util.ArrayList;
 
 public class RetornoBusqueda {
 	private int totalRegistros;
-	private ArrayList<Object> filas;
+	private ArrayList<?> filas;
 	private int RegistrosPagina;
 	private int totalPaginas;
-	public RetornoBusqueda(int totalRegistros, ArrayList<Object> filas, int RegistrosPagina, int totalPaginas) {
+	public RetornoBusqueda(int totalRegistros, ArrayList<?> filas, int RegistrosPagina, int totalPaginas) {
 		super();
 		this.totalRegistros = totalRegistros;
 		this.filas = filas;
@@ -23,10 +23,10 @@ public class RetornoBusqueda {
 	public void setTotalRegistros(int totalRegistros) {
 		this.totalRegistros = totalRegistros;
 	}
-	public ArrayList<Object> getFilas() {
+	public ArrayList<?> getFilas() {
 		return filas;
 	}
-	public void setFilas(ArrayList<Object> filas) {
+	public void setFilas(ArrayList<?> filas) {
 		this.filas = filas;
 	}
 	public int getFilasPorPagina() {

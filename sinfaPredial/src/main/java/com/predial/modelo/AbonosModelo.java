@@ -90,6 +90,11 @@ public class AbonosModelo {
 		super();
 	}
 
+	
+
+
+
+
 	public AbonosModelo(String codigoCatastral, Integer numero, Float vlrAbono, String fechaVencimiento,
 			Integer anoBanco, String banco, String f_Pago, String usuarioRegistroPago, String nroComprobante,
 			String fecha_Registro, String nroAcuerdo, String descripcion, Float porcCAr, Float porcImpuesto,
