@@ -13,84 +13,88 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import java.lang.reflect.Method;
 
 import com.predial.ModelosRetorno.FiltrosModelo;
 import com.predial.ModelosRetorno.RetornoBusqueda;
 import com.predial.ModelosRetorno.RetornoMostrable;
+import com.predial.ModelosRetorno.ConexionModelo;
 import com.predial.anotacion.DateFormat;
 import com.predial.anotacion.OrderDefault;
-import com.predial.conexion.conexion;
+import com.predial.conexion.ConBd;
+import com.predial.configuracion.Configuracion;
+import com.predial.configuracion.Modulo;
 
+import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 import jakarta.ws.rs.core.Response.Status;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 
 
 
 public interface CrudRepositorio extends FiltrosRepositorio{
-	conexion conectar = new conexion();
+	ConBd conexionNueva = new ConBd();
 	RetornoBusqueda busquedaModelo = new RetornoBusqueda();
 	RetornoMostrable RetornoModelo = new RetornoMostrable();
 	
-	public default Response responder(RetornoMostrable modelo){
+	
+	public static Response responder(RetornoMostrable modelo,ContainerRequestContext httpHeaders){
+		Configuracion conf = new Configuracion();
+		conf.get(httpHeaders.getHeaderString(Modulo.HEADER_ORIGIN));
 		Response responder = null;
 		switch(modelo.getStatus()) {
 		  case 200:
-			  responder = Response.ok(modelo).build();
+			  if(modelo.getMensaje().equals("ussOk")) {
+				  responder =  Response.accepted().build();
+			  }else {
+				  responder = Response.ok(modelo)
+	                      .header("Access-Control-Allow-Origin", conf.getUrlOrigen())
+	                      .header("Access-Control-Allow-Methods", "HEAD,GET,OPTIONS,POST,PUT,DELETE")
+	                      .header("Access-Control-Allow-Headers", "Origin, Content-Type, application/json").build();
+			  }
+			  
 		    break;
 		  case 406:
-			  responder = Response.status(Status.NOT_ACCEPTABLE).entity(modelo).build();
+			  responder = Response.status(Status.NOT_ACCEPTABLE).entity(modelo)
+					  .header("Access-Control-Allow-Origin", conf.getUrlOrigen())
+                      .header("Access-Control-Allow-Methods", "HEAD,GET,OPTIONS,POST,PUT,DELETE")
+                      .header("Access-Control-Allow-Headers", "Origin, Content-Type, application/json").build();
 		    break;
 		  case 500:
-			  responder = Response.serverError().entity(modelo).build();
+			  responder = Response.serverError().entity(modelo)
+					  .header("Access-Control-Allow-Origin", conf.getUrlOrigen())
+                      .header("Access-Control-Allow-Methods", "HEAD,GET,OPTIONS,POST,PUT,DELETE")
+                      .header("Access-Control-Allow-Headers", "Origin, Content-Type, application/json").build();
+		    break;
+		  case 401:
+			  responder = Response.status(Status.UNAUTHORIZED).entity(modelo)
+					  .header("Access-Control-Allow-Origin", conf.getUrlOrigen())
+                      .header("Access-Control-Allow-Methods", "HEAD,GET,OPTIONS,POST,PUT,DELETE")
+                      .header("Access-Control-Allow-Headers", "Origin, Content-Type, application/json").build();
 		    break;
 		}
 		return responder;
 	}
 	
-	public default int count( String query) throws SQLException{
-		Connection con = conectar.Conexion();
+	public default int count(String query) throws SQLException, ClassNotFoundException, FileNotFoundException, IOException{
+		ConexionModelo Conexionmodelo = conexionNueva.conectar();
+		Connection con = Conexionmodelo.getConMod000();
 		int count = 0;
+		System.out.println(query);
 		PreparedStatement ps = con.prepareStatement(query);
 		ResultSet rs = ps.executeQuery();
 		while(rs.next()) {
 			count++;
 		}
+		
+		conexionNueva.desconectar();
 		return count;
-	}
-	
-	public default void merge(Object obj, Object update){
-	    if(!obj.getClass().isAssignableFrom(update.getClass())){
-	        return;
-	    }
-
-	    Method[] methods = obj.getClass().getMethods();
-
-	    for(Method fromMethod: methods){
-	        if(fromMethod.getDeclaringClass().equals(obj.getClass())
-	                && fromMethod.getName().startsWith("get")){
-
-	            String fromName = fromMethod.getName();
-	            String toName = fromName.replace("get", "set");
-
-	            try {
-	                Method toMetod = obj.getClass().getMethod(toName, fromMethod.getReturnType());
-	                Object value = fromMethod.invoke(update, (Object[])null);
-	                if(value != null){
-	                    toMetod.invoke(obj, value);
-	                }
-	                System.out.println(value);
-	            } catch (Exception e) {
-	                e.printStackTrace();
-	            } 
-	        }
-	    }
 	}
 	
 	
@@ -117,7 +121,9 @@ public interface CrudRepositorio extends FiltrosRepositorio{
 		  }
 		 }
 	
-	public default <T> RetornoMostrable find(String tabla,T t,UriInfo info) throws SQLException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException{
+	public default <T> RetornoMostrable find(String tabla,T t,UriInfo info) throws SQLException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException, FileNotFoundException, IOException{
+		ConexionModelo Conexionmodelo = conexionNueva.conectar();
+		Connection con = Conexionmodelo.getConMod000();
 		FiltrosModelo Filtros = new  FiltrosModelo(); 
 		Filtros.setPagina(1);
 		Filtros.setRegistros(10);
@@ -126,7 +132,6 @@ public interface CrudRepositorio extends FiltrosRepositorio{
 		Filtros = this.Filtros(t, param);
 		}
 		System.out.println(Filtros);
-		Connection con = conectar.Conexion();
 		Field fields[] = t.getClass().getDeclaredFields();
 		ArrayList<Object> data = new ArrayList<Object>();
 		
@@ -177,7 +182,7 @@ public interface CrudRepositorio extends FiltrosRepositorio{
 				RetornoModelo.setMensaje("Busque por un parametro adecuado");
 				RetornoModelo.setStatus(406);
 			}else {
-				RetornoModelo.setMensaje("Busque por un parametro adecuado");
+				RetornoModelo.setMensaje(e.toString());
 				RetornoModelo.setStatus(500);
 			}
 			RetornoModelo.setId(null);
@@ -252,9 +257,8 @@ public interface CrudRepositorio extends FiltrosRepositorio{
 				}
 			}
 			data.add(map);
-			
 		}
-		con.close();
+		conexionNueva.desconectar();
 		busquedaModelo.setFilas(data);
 		busquedaModelo.setFilasPorPagina(data.size());
 		busquedaModelo.setTotalPaginas((int) Math.ceil((float) ((float) total / (float)Filtros.getRegistros())));
@@ -267,8 +271,9 @@ public interface CrudRepositorio extends FiltrosRepositorio{
 		
 	}
 	
-	public default <T> RetornoMostrable insert(String tabla,T t) throws SQLException {
-		Connection con = conectar.Conexion();
+	public default <T> RetornoMostrable insert(String tabla,T t) throws SQLException, ClassNotFoundException, FileNotFoundException, IOException {
+		ConexionModelo Conexionmodelo = conexionNueva.conectar();
+		Connection con = Conexionmodelo.getConMod000();
 		int idGenerado= 0;
 		Field fields[] = t.getClass().getDeclaredFields();
 		String insert = "insert into "+tabla+"(";
@@ -331,7 +336,7 @@ public interface CrudRepositorio extends FiltrosRepositorio{
 					RetornoModelo.setMensaje("insertado correctamente");
 					RetornoModelo.setId(idGenerado);
 					RetornoModelo.setStatus(200);
-					con.close();
+					conexionNueva.desconectar();
 					return RetornoModelo;
 				}catch(Exception e) {
 					
@@ -346,15 +351,16 @@ public interface CrudRepositorio extends FiltrosRepositorio{
 						RetornoModelo.setStatus(500);
 					}
 					RetornoModelo.setId(null);
-					con.close();
+					conexionNueva.desconectar();
 					return RetornoModelo;
 				}
 
 	        
 	}
 	
-	public default <T> RetornoMostrable update(String tabla,T t,UriInfo info) throws SQLException {
-		Connection con = conectar.Conexion();
+	public default <T> RetornoMostrable update(String tabla,T t,UriInfo info) throws SQLException, ClassNotFoundException, FileNotFoundException, IOException {
+		ConexionModelo Conexionmodelo = conexionNueva.conectar();
+		Connection con = Conexionmodelo.getConMod000();
 		String Select = "Select * from "+tabla+" where ";
 		
 		Field fields[] = t.getClass().getDeclaredFields();
@@ -368,8 +374,8 @@ public interface CrudRepositorio extends FiltrosRepositorio{
 		update = update.substring(0, update.length()-1);
 		update = update + " where ";
 		  for (Entry<String, List<String>> param : info.getQueryParameters().entrySet()) {
-			  update = update + param.getKey()+ " = "+this.queryType(param.getKey(), param.getValue(),t)+" and ";
-			  Select = Select + param.getKey()+ " = "+this.queryType(param.getKey(), param.getValue(),t)+" and ";
+			  update = update + param.getKey()+ " = "+this.queryType(param.getKey(), param.getValue().toString(),t)+" and ";
+			  Select = Select + param.getKey()+ " = "+this.queryType(param.getKey(), param.getValue().toString(),t)+" and ";
 		  }
 		  update = update.substring(0, update.length()-4);
 		  Select = Select.substring(0, Select.length()-4);
@@ -420,13 +426,13 @@ public interface CrudRepositorio extends FiltrosRepositorio{
 					i++;
 				}
 			}
-			ps.executeUpdate();			con.close();
+			ps.executeUpdate();			conexionNueva.desconectar();
 			RetornoModelo.setData(t);
 			RetornoModelo.setMensaje("actualizado correctamente");
 			RetornoModelo.setId(null);
 			RetornoModelo.setStatus(200);
 			return RetornoModelo;
-		}catch(Exception e) {			con.close();
+		}catch(Exception e) {			conexionNueva.desconectar();
 			System.out.println(e +" data insert unsuccess.");
 			RetornoModelo.setData(t);
 			if(e.getMessage().contains("Cannot insert duplicate key in object")) {
@@ -446,13 +452,14 @@ public interface CrudRepositorio extends FiltrosRepositorio{
 		}
 	}
 
-	public default <T> RetornoMostrable delete(T t,String tabla,UriInfo info) throws SQLException {
-		Connection con = conectar.Conexion();
+	public default <T> RetornoMostrable delete(T t,String tabla,UriInfo info) throws SQLException, ClassNotFoundException, FileNotFoundException, IOException {
+		ConexionModelo Conexionmodelo = conexionNueva.conectar();
+		Connection con = Conexionmodelo.getConMod000();
 		String Select = "select * from "+tabla+" where ";
 		String delete = "delete from "+tabla+" where ";
 		  for (Entry<String, List<String>> param : info.getQueryParameters().entrySet()) {
-			  delete = delete + param.getKey()+ " = "+this.queryType(param.getKey(), param.getValue(),t)+" and ";
-			  Select = Select + param.getKey()+ " = "+this.queryType(param.getKey(), param.getValue(),t)+" and ";
+			  delete = delete + param.getKey()+ " = "+this.queryType(param.getKey(), param.getValue().toString(),t)+" and ";
+			  Select = Select + param.getKey()+ " = "+this.queryType(param.getKey(), param.getValue().toString(),t)+" and ";
 		  }
 		  delete = delete.substring(0, delete.length()-4);
 		  Select = Select.substring(0, Select.length()-4);
@@ -470,14 +477,14 @@ public interface CrudRepositorio extends FiltrosRepositorio{
 			
 			PreparedStatement ps = con.prepareStatement(delete);
 			ps.executeUpdate();
-			con.close();
+			conexionNueva.desconectar();
 			RetornoModelo.setData(null);
 			RetornoModelo.setMensaje("eliminado correctamente");
 			RetornoModelo.setId(null);
 			RetornoModelo.setStatus(200);
 			return RetornoModelo;
 		}catch(Exception e) {
-			con.close();
+			conexionNueva.desconectar();
 			System.out.println(e +"data insert unsuccess.");
 			RetornoModelo.setData(null);
 			RetornoModelo.setMensaje("No se logro eliminar");
@@ -487,7 +494,9 @@ public interface CrudRepositorio extends FiltrosRepositorio{
 		}
 		}
 	
-	public default <T> RetornoMostrable findJoin(String tablasBuscar,UriInfo info,ArrayList<Object> modelos) throws SQLException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+	public default <T> RetornoMostrable findJoin(String tablasBuscar,UriInfo info,ArrayList<Object> modelos) throws SQLException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException, FileNotFoundException, IOException {
+		ConexionModelo Conexionmodelo = conexionNueva.conectar();
+		Connection con = Conexionmodelo.getConMod000();
 		int pagina = 1;
 		int registros = 10;
 		int total = 0;
@@ -506,7 +515,7 @@ public interface CrudRepositorio extends FiltrosRepositorio{
 			select = select.substring(0, select.length()-3);
 		}
 
-		Connection con = conectar.Conexion();
+		
 		String[] Tablas = tablasBuscar.split(",");
 		select = select +" from";
 		for (int i = 0; i < Tablas.length - 1; i++) {
@@ -526,6 +535,7 @@ public interface CrudRepositorio extends FiltrosRepositorio{
 			}else {
 				RelacionesQuery = RelacionesQuery+ " where OBJECT_NAME(fk.parent_object_id) = '"+Tablas[i+1].split("-")[0]+"' and OBJECT_NAME (fk.referenced_object_id) = '"+Tablas[i]+"'";
 			}
+			System.out.println(RelacionesQuery);
 			PreparedStatement ps = con.prepareStatement(RelacionesQuery);
 			ResultSet rs = ps.executeQuery();
 			
@@ -558,6 +568,7 @@ public interface CrudRepositorio extends FiltrosRepositorio{
 					
 					RetornoModelo.setStatus(406);
 					RetornoModelo.setId(null);
+					conexionNueva.desconectar();
 					return RetornoModelo;
 				}
 				if(select.endsWith(" and ")) {
@@ -580,7 +591,7 @@ public interface CrudRepositorio extends FiltrosRepositorio{
 						  acomuladoTodas++;
 						  if(condicionales.length == 2) {
 							  if(condicionales[0].equals(Modelo.getClass().getSimpleName().substring(0, Modelo.getClass().getSimpleName().length()-6)) && condicionales[1].equals(field.getName())){
-								select =select + param.getKey() +" = "+this.queryType(param.getKey(), param.getValue(), Modelo)+ " and "; 
+								select =select + param.getKey() +" = "+this.queryType(param.getKey(), param.getValue().toString(), Modelo)+ " and "; 
 							  }else {
 								  acomuladoexistentes++;
 							  }
@@ -589,6 +600,7 @@ public interface CrudRepositorio extends FiltrosRepositorio{
 							RetornoModelo.setMensaje("La clave del parametro debe tener un sufijo indicando la tabla a la que pertenece ejemplo:[tabla].[clave]");
 							RetornoModelo.setStatus(406);
 							RetornoModelo.setId(null);
+							conexionNueva.desconectar();
 							return RetornoModelo;
 						  }
 					  }else {
@@ -602,6 +614,7 @@ public interface CrudRepositorio extends FiltrosRepositorio{
 			RetornoModelo.setMensaje("la clave del parameteo o el sufijo de la tabla no existen");
 			RetornoModelo.setStatus(406);
 			RetornoModelo.setId(null);
+			conexionNueva.desconectar();
 			return RetornoModelo;
 		}
 		
@@ -624,6 +637,7 @@ public interface CrudRepositorio extends FiltrosRepositorio{
 				RetornoModelo.setStatus(500);
 			}
 			RetornoModelo.setId(null);
+			conexionNueva.desconectar();
 			return RetornoModelo;
 		}
 		
@@ -718,6 +732,7 @@ public interface CrudRepositorio extends FiltrosRepositorio{
 		RetornoModelo.setMensaje("nada");
 		RetornoModelo.setStatus(200);
 		RetornoModelo.setId(null);
+		conexionNueva.desconectar();
 		return RetornoModelo;
 	}
 		

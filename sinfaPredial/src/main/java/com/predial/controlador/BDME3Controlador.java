@@ -13,6 +13,7 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -24,23 +25,23 @@ public class BDME3Controlador {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response encontrar(@Context UriInfo uriinfo) throws SQLException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
-        return servicio.encontrar("BDME3", modelo, uriinfo);
+    public Response encontrar(@Context UriInfo uriinfo,@Context ContainerRequestContext httpHeaders) throws SQLException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+        return servicio.encontrar("BDME3", modelo, uriinfo,httpHeaders);
     }
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    public Response insertar(@BeanParam BDME3Modelo modelo) throws SQLException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
-        return servicio.insertar("BDME3", modelo);
+    public Response insertar(@BeanParam BDME3Modelo modelo,@Context ContainerRequestContext httpHeaders) throws SQLException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+        return servicio.insertar("BDME3", modelo,httpHeaders);
     }
     
     @PUT
     @Produces(MediaType.APPLICATION_JSON)
-    public Response actualizar(@BeanParam BDME3Modelo modelo,@Context UriInfo uriinfo) throws SQLException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
-        return servicio.actualizar("BDME3", modelo ,uriinfo);
+    public Response actualizar(@BeanParam BDME3Modelo modelo,@Context UriInfo uriinfo,@Context ContainerRequestContext httpHeaders) throws SQLException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+        return servicio.actualizar("BDME3", modelo ,uriinfo,httpHeaders);
     }
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
-    public Response eliminar(@BeanParam BDME3Modelo modelo,@Context UriInfo uriinfo) throws SQLException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
-        return servicio.eliminar("BDME3", modelo ,uriinfo);
+    public Response eliminar(@BeanParam BDME3Modelo modelo,@Context UriInfo uriinfo,@Context ContainerRequestContext httpHeaders) throws SQLException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+        return servicio.eliminar("BDME3", modelo ,uriinfo,httpHeaders);
     }
 }

@@ -13,6 +13,7 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -25,23 +26,23 @@ public class tipo1Controlador {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response encontrar(@Context UriInfo uriinfo) throws SQLException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
-        return servicio.encontrar("tipo1", modelo, uriinfo);
+    public Response encontrar(@Context UriInfo uriinfo,@Context ContainerRequestContext httpHeaders) throws SQLException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+        return servicio.encontrar("tipo1", modelo, uriinfo,httpHeaders);
     }
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    public Response insertar(@BeanParam tipo1Modelo modelo) throws SQLException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
-        return servicio.insertar("tipo1", modelo);
+    public Response insertar(@BeanParam tipo1Modelo modelo,@Context ContainerRequestContext httpHeaders) throws SQLException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+        return servicio.insertar("tipo1", modelo,httpHeaders);
     }
     
     @PUT
     @Produces(MediaType.APPLICATION_JSON)
-    public Response actualizar(@BeanParam tipo1Modelo modelo,@Context UriInfo uriinfo) throws SQLException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
-        return servicio.actualizar("tipo1", modelo ,uriinfo);
+    public Response actualizar(@BeanParam tipo1Modelo modelo,@Context UriInfo uriinfo,@Context ContainerRequestContext httpHeaders) throws SQLException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+        return servicio.actualizar("tipo1", modelo ,uriinfo,httpHeaders);
     }
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
-    public Response eliminar(@BeanParam tipo1Modelo modelo,@Context UriInfo uriinfo) throws SQLException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
-        return servicio.eliminar("tipo1", modelo ,uriinfo);
+    public Response eliminar(@BeanParam tipo1Modelo modelo,@Context UriInfo uriinfo,@Context ContainerRequestContext httpHeaders) throws SQLException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+        return servicio.eliminar("tipo1", modelo ,uriinfo,httpHeaders);
     }
 }

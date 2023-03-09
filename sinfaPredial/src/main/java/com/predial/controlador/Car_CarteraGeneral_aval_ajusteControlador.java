@@ -13,6 +13,7 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -25,24 +26,24 @@ public class Car_CarteraGeneral_aval_ajusteControlador {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response encontrar(@Context UriInfo uriinfo) throws SQLException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
-        return servicio.encontrar("Car_CarteraGeneral_aval_ajuste", modelo, uriinfo);
+    public Response encontrar(@Context UriInfo uriinfo,@Context ContainerRequestContext httpHeaders) throws SQLException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+        return servicio.encontrar("Car_CarteraGeneral_aval_ajuste", modelo, uriinfo,httpHeaders);
     }
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    public Response insertar(@BeanParam Car_CarteraGeneral_aval_ajusteModelo modelo) throws SQLException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
-        return servicio.insertar("Car_CarteraGeneral_aval_ajuste", modelo);
+    public Response insertar(@BeanParam Car_CarteraGeneral_aval_ajusteModelo modelo,@Context ContainerRequestContext httpHeaders) throws SQLException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+        return servicio.insertar("Car_CarteraGeneral_aval_ajuste", modelo,httpHeaders);
     }
     
     @PUT
     @Produces(MediaType.APPLICATION_JSON)
-    public Response actualizar(@BeanParam Car_CarteraGeneral_aval_ajusteModelo modelo,@Context UriInfo uriinfo) throws SQLException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
-        return servicio.actualizar("Car_CarteraGeneral_aval_ajuste", modelo ,uriinfo);
+    public Response actualizar(@BeanParam Car_CarteraGeneral_aval_ajusteModelo modelo,@Context UriInfo uriinfo,@Context ContainerRequestContext httpHeaders) throws SQLException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+        return servicio.actualizar("Car_CarteraGeneral_aval_ajuste", modelo ,uriinfo,httpHeaders);
     }
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
-    public Response eliminar(@BeanParam Car_CarteraGeneral_aval_ajusteModelo modelo,@Context UriInfo uriinfo) throws SQLException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
-        return servicio.eliminar("Car_CarteraGeneral_aval_ajuste", modelo ,uriinfo);
+    public Response eliminar(@BeanParam Car_CarteraGeneral_aval_ajusteModelo modelo,@Context UriInfo uriinfo,@Context ContainerRequestContext httpHeaders) throws SQLException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+        return servicio.eliminar("Car_CarteraGeneral_aval_ajuste", modelo ,uriinfo,httpHeaders);
     }
 }
 

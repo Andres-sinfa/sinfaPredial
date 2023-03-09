@@ -1,11 +1,10 @@
 package com.predial.servicio;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Map;
-
-import com.predial.ModelosRetorno.RetornoMostrable;
 import com.predial.modelo.AbonosModelo;   
 import com.predial.modelo.AbonosOtrosModelo;   
 import com.predial.modelo.AbonosPredialModelo;   
@@ -137,6 +136,7 @@ import com.predial.modelo.VariablesModelo;
 import com.predial.modelo.VencimientosModelo;   
 import com.predial.modelo.VeredasModelo;
 
+import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 
@@ -271,7 +271,7 @@ public class ServicioQueryJoin implements CrudRepositorio{
 	VencimientosModelo VencimientosModelo = new VencimientosModelo(); 
 	VeredasModelo VeredasModelo = new VeredasModelo(); 
 	
-	public Response encontrarJoin(String tablas,UriInfo info) throws SQLException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException{
+	public Response encontrarJoin(String tablas,UriInfo info,ContainerRequestContext httpHeaders) throws SQLException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException, FileNotFoundException, IOException{
 		String[] tablasBuscar = tablas.split(",");
 		ArrayList<Object> objetos = new ArrayList<Object>();
 		for(String tabla: tablasBuscar) {
@@ -668,6 +668,6 @@ public class ServicioQueryJoin implements CrudRepositorio{
 			}
 		}
 		
-		return this.responder(this.findJoin(tablas, info,objetos));
+		return CrudRepositorio.responder(this.findJoin(tablas, info,objetos),httpHeaders);
 	}
 }

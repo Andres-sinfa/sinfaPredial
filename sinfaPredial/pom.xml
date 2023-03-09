@@ -51,6 +51,48 @@
     </dependencyManagement>
 
     <dependencies>
+<!--	    <dependency>-->
+<!--	      <groupId>sinfaAdmin</groupId>-->
+<!--	      <artifactId>sinfaAdmin</artifactId>-->
+<!--	      <version>1.0</version>-->
+<!--	      <scope>system</scope>-->
+<!--	      <systemPath>${java.home}/lib/sinfaAdmin.jar</systemPath>-->
+<!--	    </dependency>-->
+<!--	   	<dependency>-->
+<!--	      <groupId>prueba</groupId>-->
+<!--	      <artifactId>prueba</artifactId>-->
+<!--	      <version>0.0.1-SNAPSHOT</version>-->
+<!--	      <scope>system</scope>-->
+<!--	      <systemPath>${java.home}/lib/prueba-0.0.1-SNAPSHOT.jar</systemPath>-->
+<!--	    </dependency>-->
+<!--	    <dependency>-->
+<!--	      <groupId>util2</groupId>-->
+<!--	      <artifactId>util2</artifactId>-->
+<!--	      <version>2.0</version>-->
+<!--	      <scope>system</scope>-->
+<!--	      <systemPath>${java.home}/lib/sinfaUtil2.0.jar</systemPath>-->
+<!--	    </dependency>-->
+<!--		<dependency>-->
+<!--		    <groupId>prueba</groupId>-->
+<!--		    <artifactId>prueba</artifactId>-->
+<!--		    <version>0.0.1-SNAPSHOT</version>-->
+<!--		</dependency>-->
+		<dependency>
+		    <groupId>io.jsonwebtoken</groupId>
+		    <artifactId>jjwt-api</artifactId>
+		    <version>0.11.5</version>
+		</dependency>
+		<dependency>
+		    <groupId>io.jsonwebtoken</groupId>
+		    <artifactId>jjwt-impl</artifactId>
+		    <version>0.11.5</version>
+		    <scope>runtime</scope>
+		</dependency>
+		<dependency>
+		    <groupId>io.jsonwebtoken</groupId>
+		    <artifactId>jjwt-gson</artifactId>
+		    <version>0.11.5</version>
+		</dependency>
 		<dependency>
 		    <groupId>jakarta.servlet</groupId>
 		    <artifactId>jakarta.servlet-api</artifactId>
@@ -108,6 +150,16 @@
 		    <groupId>com.google.guava</groupId>
 		    <artifactId>guava</artifactId>
 		    <version>31.1-jre</version>
+		</dependency>
+		<dependency>
+		    <groupId>sinfaUtil</groupId>
+		    <artifactId>sinfaUtil</artifactId>
+		    <version>3.0-maven</version>
+		</dependency>
+		<dependency>
+		    <groupId>sinfaAdmin</groupId>
+		    <artifactId>sinfaAdmin</artifactId>
+		    <version>2.0-maven</version>
 		</dependency>
     </dependencies>
     <properties>

@@ -3,12 +3,12 @@ package com.predial.ModelosRetorno;
 public class RetornoMostrable {
 	private Object Id;
 	private Object data;
-	private String mensaje;
+	private Object mensaje;
 	private int status;
 	public RetornoMostrable() {
 		super();
 	}
-	public RetornoMostrable(Object Id, Object data, String mensaje, int status) {
+	public RetornoMostrable(Object Id, Object data, Object mensaje, int status) {
 		super();
 		this.Id = Id;
 		this.data = data;
@@ -27,10 +27,10 @@ public class RetornoMostrable {
 	public void setData(Object data) {
 		this.data = data;
 	}
-	public String getMensaje() {
+	public Object getMensaje() {
 		return mensaje;
 	}
-	public void setMensaje(String mensaje) {
+	public void setMensaje(Object mensaje) {
 		this.mensaje = mensaje;
 	}
 	public int getStatus() {

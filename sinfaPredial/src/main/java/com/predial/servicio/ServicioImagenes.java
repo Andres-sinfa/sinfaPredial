@@ -1,6 +1,7 @@
 package com.predial.servicio;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,6 +15,7 @@ import com.predial.modelo.ImagesModelo;
 import com.predial.repositorio.CrudRepositorio;
 import com.predial.repositorio.ValidarRepositorio;
 
+import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 
@@ -61,19 +63,19 @@ public class ServicioImagenes implements CrudRepositorio,ValidarRepositorio {
 		return estatus;
 	}
 	
-	public Response insertar(String tabla,ImagesModelo modelo) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, SQLException, IOException {
+	public Response insertar(String tabla,ImagesModelo modelo,ContainerRequestContext httpHeaders) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, SQLException, IOException, ClassNotFoundException {
 		if(this.validar(modelo, "insertar").getData() == null) {
-			return this.responder(this.insert(tabla, this.CrearArchivo(modelo)));
+			return CrudRepositorio.responder(this.insert(tabla, this.CrearArchivo(modelo)),httpHeaders);
 //			return Response.ok().build();
 		} else {
-			return this.responder(this.validar(modelo, "insertar"));
+			return CrudRepositorio.responder(this.validar(modelo, "insertar"),httpHeaders);
 		}
 		
 		
 	}
 	
 	@SuppressWarnings("unchecked")
-	public Response actualizar(String tabla,ImagesModelo modelo , UriInfo uriinfo) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, SQLException, IOException {
+	public Response actualizar(String tabla,ImagesModelo modelo , UriInfo uriinfo,ContainerRequestContext httpHeaders) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, SQLException, IOException, ClassNotFoundException {
 		if(this.validar(modelo, "actualizar").getData() == null) {
 			RetornoMostrable modeloBusqueda = this.find(tabla, modelo, uriinfo);
 			if(((Map<String , Object>) ((ArrayList<?>) this.callGetter(modeloBusqueda.getData(), "filas")).get(0)).size() > 1) {
@@ -83,23 +85,23 @@ public class ServicioImagenes implements CrudRepositorio,ValidarRepositorio {
 					RetornoModelo.setMensaje("No se logro actualizar la imagen");
 					RetornoModelo.setStatus(500);
 					RetornoModelo.setId(null);
-					this.responder(RetornoModelo);
+					CrudRepositorio.responder(RetornoModelo,httpHeaders);
 				}
 			} else {
 				RetornoModelo.setData(null);
 				RetornoModelo.setMensaje("Busque por un parametro adecuado");
 				RetornoModelo.setStatus(406);
 				RetornoModelo.setId(null);
-				this.responder(RetornoModelo);
+				CrudRepositorio.responder(RetornoModelo,httpHeaders);
 			}
-		return this.responder(this.update(tabla, this.CrearArchivo(modelo) , uriinfo));
+		return CrudRepositorio.responder(this.update(tabla, this.CrearArchivo(modelo) , uriinfo),httpHeaders);
 		} else {
-			return this.responder(this.validar(modelo, "actualizar"));
+			return CrudRepositorio.responder(this.validar(modelo, "actualizar"),httpHeaders);
 		}
 	}
 	
 	@SuppressWarnings("unchecked")
-	public Response eliminar(String tabla,Object modelo , UriInfo uriinfo) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, SQLException {
+	public Response eliminar(String tabla,Object modelo , UriInfo uriinfo,ContainerRequestContext httpHeaders) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, SQLException, ClassNotFoundException, FileNotFoundException, IOException {
 		RetornoMostrable modeloBusqueda = this.find(tabla, modelo, uriinfo);
 		if(((Map<String , Object>) ((ArrayList<?>) this.callGetter(modeloBusqueda.getData(), "filas")).get(0)).size() > 1) {
 			boolean eliminado = this.EliminarArchivo(((Map<String , Object>) ((ArrayList<?>) this.callGetter(modeloBusqueda.getData(), "filas")).get(0)).get("Patch").toString());
@@ -108,16 +110,16 @@ public class ServicioImagenes implements CrudRepositorio,ValidarRepositorio {
 				RetornoModelo.setMensaje("No se logro actualizar la imagen");
 				RetornoModelo.setStatus(500);
 				RetornoModelo.setId(null);
-				this.responder(RetornoModelo);
+				CrudRepositorio.responder(RetornoModelo,httpHeaders);
 			}
 		}else {
 			RetornoModelo.setData(null);
 			RetornoModelo.setMensaje("Busque por un parametro adecuado");
 			RetornoModelo.setStatus(406);
 			RetornoModelo.setId(null);
-			this.responder(RetornoModelo);
+			CrudRepositorio.responder(RetornoModelo,httpHeaders);
 		}
-		return this.responder(this.delete(modelo,tabla, uriinfo));
+		return CrudRepositorio.responder(this.delete(modelo,tabla, uriinfo),httpHeaders);
 	}
 
 }

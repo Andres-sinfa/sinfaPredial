@@ -1,29 +1,13 @@
 package com.predial.repositorio;
 
-import java.nio.charset.StandardCharsets;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.SecureRandom;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.KeySpec;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.ChronoField;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.SecretKey;
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.PBEKeySpec;
-import javax.crypto.spec.SecretKeySpec;
-
-import com.google.common.hash.Hashing;
 
 import jakarta.activation.DataHandler;
 import jakarta.activation.DataSource;
@@ -104,32 +88,41 @@ public interface GeneradoresRepositorio {
 	
 
 	
-	public default String generarToken() {
-		String token =  String.valueOf(((int) (Math.random() * 1000000)));
-		return token;
+	public default String[] generarToken() throws Exception {
+		 DateTimeFormatter DATE_FORMAT =  
+		            new DateTimeFormatterBuilder().appendPattern("dd/MM/yyyy[ [HH][:mm][:ss][.SSS]]")
+		            .parseDefaulting(ChronoField.HOUR_OF_DAY, 0)
+		            .parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
+		            .parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)
+		            .toFormatter(); 
+//		 System.out.println(String.valueOf(LocalDateTime.now().plusMinutes(30).format(DATE_FORMAT)));
+		String token =  String.valueOf(((int) (Math.random() * 1000000)))+"-"+String.valueOf(LocalDateTime.now().format(DATE_FORMAT))+"-"+String.valueOf(LocalDateTime.now().plusMinutes(30).format(DATE_FORMAT));
+		String[] splitToken =token.split("-");
+//		throw new Exception(token);
+		return splitToken;
 	}
 	
-	public default String convertirSHA256(String text ,String salt) throws NoSuchProviderException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
-		System.out.println(text);
-		String password = "fulano";
-		SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-		KeySpec spec = new PBEKeySpec(password.toCharArray(), salt.getBytes(), 65536, 256);
-	    SecretKey secret = new SecretKeySpec(factory.generateSecret(spec).getEncoded(), "AES");
-	    
-	    byte[] iv = new byte[16];
-	    new SecureRandom().nextBytes(iv);
-	    IvParameterSpec IvparameterSpec= new IvParameterSpec(iv);
-	    
-	    Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-	    cipher.init(Cipher.ENCRYPT_MODE, secret, IvparameterSpec);
-	    byte[] cipherText = cipher.doFinal(text.getBytes());
-	    System.out.println(cipherText);
-	    
-	    return Hashing.sha256().hashString(cipherText.toString(), StandardCharsets.UTF_8).toString();
-	    
-//	    return Base64.getEncoder()
-//	        .encodeToString(cipherText);
-}
+//	public default String convertirSHA256(String text ,String salt) throws NoSuchProviderException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
+//		System.out.println(text);
+//		String password = "fulano";
+//		SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+//		KeySpec spec = new PBEKeySpec(password.toCharArray(), salt.getBytes(), 65536, 256);
+//	    SecretKey secret = new SecretKeySpec(factory.generateSecret(spec).getEncoded(), "AES");
+//	    
+//	    byte[] iv = new byte[16];
+//	    new SecureRandom().nextBytes(iv);
+//	    IvParameterSpec IvparameterSpec= new IvParameterSpec(iv);
+//	    
+//	    Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+//	    cipher.init(Cipher.ENCRYPT_MODE, secret, IvparameterSpec);
+//	    byte[] cipherText = cipher.doFinal(text.getBytes());
+//	    System.out.println(cipherText);
+//	    
+//	    return Hashing.sha256().hashString(cipherText.toString(), StandardCharsets.UTF_8).toString();
+//	    
+////	    return Base64.getEncoder()
+////	        .encodeToString(cipherText);
+//}
 	
 	public default String emailContent(String token) {
 		String hrml =  ""
@@ -465,7 +458,7 @@ public interface GeneradoresRepositorio {
 				+ "																		<p\r\n"
 				+ "																			style=\"margin: 0; mso-line-height-alt: 18px;\">\r\n"
 				+ "																			por favor introduzca este token en la zona\r\n"
-				+ "																			requerida por el aplicativo</p>\r\n"
+				+ "																			requerida por el aplicativo este token es valido por los siguentes 30 minutos</p>\r\n"
 				+ "																	</div>\r\n"
 				+ "																</div>\r\n"
 				+ "															</td>\r\n"
